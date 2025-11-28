@@ -1,7 +1,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 // Initialize Gemini AI (FREE tier - no credit card needed!)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+const apiKey = process.env.GEMINI_API_KEY
+if (!apiKey) {
+    console.warn('GEMINI_API_KEY is not set. AI features will return fallback data.')
+}
+const genAI = new GoogleGenerativeAI(apiKey || 'dummy_key')
 
 export async function generateAISuggestions(userProfile: { name?: string; email: string; connections: number }) {
     try {
