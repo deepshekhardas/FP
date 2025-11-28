@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import AdminProfileCard from './AdminProfileCard'
 import UpgradeButton from './UpgradeButton'
+import AIProfileGenerator from './AIProfileGenerator'
 
 export default function UserProfile({ user, profile }: { user: any; profile: any }) {
     const supabase = createClient()
@@ -53,7 +54,15 @@ export default function UserProfile({ user, profile }: { user: any; profile: any
                         </h3>
                         <p className="mt-1 max-w-2xl text-sm text-gray-400">Manage your personal information.</p>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 items-center">
+                        <AIProfileGenerator
+                            currentSummary={profile?.bio}
+                            onGenerated={(summary) => {
+                                // We'll assume there's a bio field or append to name for now as demo
+                                // Ideally we'd add a 'bio' column to users table
+                                alert(`AI Generated Bio:\n\n${summary}\n\n(Copy this to your profile!)`)
+                            }}
+                        />
                         {!profile?.is_premium && <UpgradeButton currentUser={user} />}
                         <a href="/chat" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 transition-all hover:scale-105">
                             Go to Messages

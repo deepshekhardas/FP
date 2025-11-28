@@ -5,6 +5,7 @@ import CosmicBackground from './ui/CosmicBackground'
 import GlassCard from './ui/GlassCard'
 import ConnectionRequestsList from './ConnectionRequestsList'
 import NetworkList from './NetworkList'
+import AINetworkingSuggestions from './AINetworkingSuggestions'
 
 export default function AdminDashboard({ user }: { user: any }) {
     return (
@@ -108,6 +109,11 @@ export default function AdminDashboard({ user }: { user: any }) {
                             <NetworkList userId={user.id} />
                         </div>
                     </GlassCard>
+
+                    {/* AI Networking Suggestions (Wide) */}
+                    <div className="md:col-span-3">
+                        <AINetworkingSuggestions userId={user.id} />
+                    </div>
 
                 </div>
             </div>
