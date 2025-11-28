@@ -1,0 +1,31 @@
+----------------------------------------------------------------
+STEP-BY-STEP VERCEL DEPLOYMENT DATA
+----------------------------------------------------------------
+
+I cannot log in to your Vercel account directly (for your security).
+But I have prepared this cheat sheet. You just need to copy-paste these 3 lines.
+
+STEP 1: Go to https://vercel.com/new
+STEP 2: Import your "FP" repository.
+STEP 3: Click "Environment Variables" and add these:
+
+----------------------------------------------------------------
+VARIABLE 1
+Name:  NEXT_PUBLIC_SUPABASE_URL
+Value: [OPEN YOUR .env.local FILE AND COPY THIS VALUE]
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+VARIABLE 2
+Name:  NEXT_PUBLIC_SUPABASE_ANON_KEY
+Value: [OPEN YOUR .env.local FILE AND COPY THIS VALUE]
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+VARIABLE 3
+Name:  GEMINI_API_KEY
+Value: [PASTE THE GOOGLE KEY YOU JUST GENERATED]
+----------------------------------------------------------------
+
+STEP 4: Click "Deploy"
+----------------------------------------------------------------

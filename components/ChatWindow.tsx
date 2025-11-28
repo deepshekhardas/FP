@@ -1,7 +1,16 @@
-id: string
-name: string
-email: string
-avatar_url: string
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { AnimatePresence, motion } from 'framer-motion'
+import VideoCall from './VideoCall'
+import AISmartReply from './AISmartReply'
+
+type UserProfile = {
+    id: string
+    name: string
+    email: string
+    avatar_url: string
 }
 
 type Group = {
