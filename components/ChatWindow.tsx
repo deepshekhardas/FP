@@ -55,13 +55,6 @@ export default function ChatWindow({
     const [isInitiator, setIsInitiator] = useState(false)
     const [callRoomId, setCallRoomId] = useState<string | null>(null)
 
-    // Audio Recording State
-    const [isRecording, setIsRecording] = useState(false)
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
-    const [audioChunks, setAudioChunks] = useState<Blob[]>([])
-    const [recordingDuration, setRecordingDuration] = useState(0)
-    const timerRef = useRef<NodeJS.Timeout | null>(null)
-
     useEffect(() => {
         if (currentUser && (selectedUser || selectedGroup)) {
             fetchMessages()
@@ -161,7 +154,7 @@ export default function ChatWindow({
         return channel
     }
 
-    async function sendMessage(e?: React.FormEvent, fileUrl?: string, type: 'text' | 'image' | 'audio' | 'file' = 'text') {
+    async function sendMessage(e?: React.FormEvent, fileUrl?: string, type: 'text' | 'image' = 'text') {
         if (e) e.preventDefault()
 
         const content = fileUrl || newMessage.trim()
@@ -219,81 +212,6 @@ export default function ChatWindow({
             setUploading(false)
             if (fileInputRef.current) fileInputRef.current.value = ''
         }
-    }
-
-    // Audio Recording Functions
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-            const recorder = new MediaRecorder(stream)
-            setMediaRecorder(recorder)
-            setAudioChunks([])
-
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    setAudioChunks((prev) => [...prev, e.data])
-                }
-            }
-
-            recorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
-                await uploadAudio(audioBlob)
-                stream.getTracks().forEach(track => track.stop())
-            }
-
-            recorder.start()
-            setIsRecording(true)
-
-            // Start timer
-            setRecordingDuration(0)
-            timerRef.current = setInterval(() => {
-                setRecordingDuration(prev => prev + 1)
-            }, 1000)
-
-        } catch (err) {
-            console.error('Error accessing microphone:', err)
-            alert('Could not access microphone. Please check permissions.')
-        }
-    }
-
-    const stopRecording = () => {
-        if (mediaRecorder && isRecording) {
-            mediaRecorder.stop()
-            setIsRecording(false)
-            if (timerRef.current) {
-                clearInterval(timerRef.current)
-                timerRef.current = null
-            }
-        }
-    }
-
-    const uploadAudio = async (audioBlob: Blob) => {
-        setUploading(true)
-        try {
-            const fileName = `${currentUser.id}/audio_${Date.now()}.webm`
-            const { error: uploadError } = await supabase.storage
-                .from('chat-files')
-                .upload(fileName, audioBlob)
-
-            if (uploadError) throw uploadError
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('chat-files')
-                .getPublicUrl(fileName)
-
-            await sendMessage(undefined, publicUrl, 'audio')
-        } catch (error) {
-            console.error('Error uploading audio:', error)
-        } finally {
-            setUploading(false)
-            setAudioChunks([]) // Clear chunks for next recording
-        }
-    }
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60)
-        const secs = seconds % 60
-        return `${mins}:${secs.toString().padStart(2, '0')}`
     }
 
     const startCall = async () => {
@@ -462,15 +380,6 @@ export default function ChatWindow({
                                                         className="max-w-xs rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                                         onClick={() => window.open(msg.content, '_blank')}
                                                     />
-                                                ) : msg.message_type === 'audio' ? (
-                                                    <div className="flex items-center space-x-2 min-w-[200px]">
-                                                        <div className="p-2 bg-white/10 rounded-full">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.414z" clipRule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                        <audio controls src={msg.content} className="h-8 w-48" />
-                                                    </div>
                                                 ) : (
                                                     <p className="text-sm leading-relaxed">{msg.content}</p>
                                                 )}
@@ -522,7 +431,7 @@ export default function ChatWindow({
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={uploading || isRecording}
+                                disabled={uploading}
                                 className="p-2.5 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-all"
                                 title="Attach Image"
                             >
@@ -531,44 +440,18 @@ export default function ChatWindow({
                                 </svg>
                             </button>
 
-                            {/* Voice Note Button */}
-                            <button
-                                type="button"
-                                onClick={isRecording ? stopRecording : startRecording}
-                                disabled={uploading}
-                                className={`p-2.5 rounded-full transition-all ${isRecording
-                                        ? 'bg-red-600 text-white animate-pulse'
-                                        : 'text-gray-400 hover:text-white hover:bg-white/10'
-                                    }`}
-                                title={isRecording ? "Stop Recording" : "Record Voice Note"}
-                            >
-                                {isRecording ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                    </svg>
-                                )}
-                            </button>
-
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder={
-                                    uploading ? "Uploading..." :
-                                        isRecording ? `Recording... ${formatTime(recordingDuration)}` :
-                                            "Type a message..."
-                                }
-                                disabled={uploading || isRecording}
+                                placeholder={uploading ? "Uploading..." : "Type a message..."}
+                                disabled={uploading}
                                 className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all"
                             />
 
                             <button
                                 type="submit"
-                                disabled={!newMessage.trim() || uploading || isRecording}
+                                disabled={!newMessage.trim() || uploading}
                                 className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
