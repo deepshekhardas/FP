@@ -1,0 +1,97 @@
+<div class="container fade-in">
+    <div class="dashboard-header" style="margin-bottom: 30px;">
+        <h1 class="text-gradient" style="font-size: 2.5rem; margin-bottom: 0.5rem;">Dashboard</h1>
+        <p class="text-secondary">Your daily fitness overview</p>
+    </div>
+
+    <div class="grid-dashboard">
+        <!-- Today's Activity Card -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Today's Activity</h3>
+                <i class="fas fa-fire" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+            </div>
+
+            <div class="progress-circle" style="margin: 30px auto;">
+                <div class="progress-value">0%</div>
+            </div>
+
+            <div class="empty-state" style="text-align: center; margin-top: 20px;">
+                <p class="text-secondary" style="margin-bottom: 15px;">No workouts logged today.</p>
+                <a href="#/log-workout" class="btn btn-primary btn-block">
+                    <i class="fas fa-plus"></i> Log Workout
+                </a>
+            </div>
+        </div>
+
+        <!-- Weekly Goal Card -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Weekly Goal</h3>
+                <i class="fas fa-bullseye" style="color: var(--secondary-color); font-size: 1.2rem;"></i>
+            </div>
+
+            <div class="goal-stats" style="margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 500;">Workouts</span>
+                    <span style="color: var(--primary-color); font-weight: bold;">3 / 5</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); height: 12px; border-radius: 6px; overflow: hidden;">
+                    <div
+                        style="background: var(--gradient-success); width: 60%; height: 100%; border-radius: 6px; transition: width 1s ease-in-out;">
+                    </div>
+                </div>
+            </div>
+
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                You're doing great! Keep up the momentum to reach your weekly target.
+            </p>
+        </div>
+
+        <!-- Analytics Chart Card -->
+        <div class="card" style="grid-column: span 8; min-height: 350px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Weekly Progress</h3>
+                <select id="chart-filter" class="setting-select" style="padding: 4px 8px; font-size: 0.85rem;">
+                    <option value="calories">Calories Burned</option>
+                    <option value="duration">Duration (mins)</option>
+                </select>
+            </div>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Water Tracker Card (New) -->
+        <div class="card"
+            style="grid-column: span 4; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin-bottom: 5px;">Hydration</h3>
+                <p class="text-secondary" style="font-size: 0.9rem;">Daily Goal: 8 Cups</p>
+            </div>
+            <div
+                style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#e0e0e0" stroke-width="12" />
+                    <circle id="water-progress-ring" cx="60" cy="60" r="54" fill="none" stroke="#06b6d4"
+                        stroke-width="12" stroke-dasharray="339.292" stroke-dashoffset="339.292"
+                        transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.35s;" />
+                </svg>
+                <div style="position: absolute; text-align: center;">
+                    <i class="fas fa-tint" style="color: #06b6d4; font-size: 1.5rem; margin-bottom: 4px;"></i>
+                    <h2 id="water-count" style="margin: 0; font-size: 2rem;">0</h2>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button id="add-water" class="btn btn-primary"
+                    style="width: 40px; height: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="remove-water" class="btn btn-secondary"
+                    style="width: 40px; height: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

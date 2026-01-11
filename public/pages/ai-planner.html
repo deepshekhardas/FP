@@ -1,0 +1,96 @@
+<div class="container fade-in">
+    <div class="header-section" style="margin-bottom: 30px;">
+        <h1 class="text-gradient">AI Workout Planner 🤖</h1>
+        <p class="text-secondary">Get a personalized workout plan instantly.</p>
+    </div>
+
+    <div class="grid-dashboard" style="grid-template-columns: 1fr 1fr; gap: 30px;">
+        <!-- Input Form -->
+        <div class="card" style="grid-column: span 1;">
+            <h3>Preferences</h3>
+            <form id="ai-planner-form">
+                <div class="form-group">
+                    <label class="form-label">Fitness Goal</label>
+                    <select id="ai-goal" class="form-control">
+                        <option value="weight_loss">Lose Weight & Burn Fat</option>
+                        <option value="muscle">Build Muscle (Hypertrophy)</option>
+                        <option value="strength">Build Strength (Power)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Equipment</label>
+                    <select id="ai-equipment" class="form-control">
+                        <option value="gym">Full Gym Access</option>
+                        <option value="dumbbells">Dumbbells Only</option>
+                        <option value="bodyweight">No Equipment (Home)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Experience Level</label>
+                    <select id="ai-experience" class="form-control">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Duration</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-secondary duration-btn active" data-val="30">30
+                            Min</button>
+                        <button type="button" class="btn btn-secondary duration-btn" data-val="45">45 Min</button>
+                        <button type="button" class="btn btn-secondary duration-btn" data-val="60">60 Min</button>
+                    </div>
+                    <input type="hidden" id="ai-duration" value="30">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="generate-btn">
+                    <i class="fas fa-magic"></i> Generate Plan
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        <div class="card"
+            style="grid-column: span 1; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 400px;"
+            id="ai-result-card">
+
+            <!-- Placeholder State -->
+            <div id="ai-placeholder" style="text-align: center;">
+                <i class="fas fa-robot" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 20px;"></i>
+                <p>Select your preferences and click Generate.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="ai-loading" style="display: none; text-align: center;">
+                <div class="spinner" style="margin: 0 auto 20px;"></div>
+                <p class="text-gradient" style="font-weight: bold;">AI is thinking...</p>
+                <p class="text-secondary" style="font-size: 0.9rem;">Analyzing fitness data...</p>
+            </div>
+
+            <!-- Result State -->
+            <div id="ai-plan-result" style="display: none; width: 100%;">
+                <h3 id="plan-title" style="color: var(--primary-color); margin-bottom: 5px;">Custom Routine</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <span class="badge" id="plan-duration">45 Mins</span>
+                    <span class="badge" id="plan-level" style="background: var(--bg-body);">Intermediate</span>
+                </div>
+
+                <div class="scroll-area"
+                    style="max-height: 300px; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+                    <ul id="ai-exercises-list" style="list-style: none; padding: 0;">
+                        <!-- Exercises injected here -->
+                    </ul>
+                </div>
+
+                <button class="btn btn-success btn-block" id="save-ai-plan">
+                    <i class="fas fa-check"></i> Save & Start Workout
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
