@@ -206,7 +206,6 @@ const renderProfileTab = (container, user, bmiData) => {
 const renderSettingsTab = (container, user, bmiData) => {
     const settings = bmiData.settings || {};
     const notifications = settings.notifications || {};
-    const privacy = settings.privacy || {};
 
     container.innerHTML = `
         <div class="fade-in">

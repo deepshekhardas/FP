@@ -1,0 +1,39 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run Lint
+      run: npm run lint
+      continue-on-error: true # Warning for now, fail later when strictly compliant
+      
+    - name: Run Tests
+      run: npm test
+      env:
+        CI: true
+        JWT_SECRET: test_secret
+        MONGO_URI: mongodb://localhost:27017/test_db # GitHub Actions service needed for real DB, mocking for now

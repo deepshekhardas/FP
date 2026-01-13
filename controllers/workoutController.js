@@ -1,4 +1,4 @@
-const { WorkoutLog, Exercise } = require('../db');
+const { WorkoutLog } = require('../db');
 const { calculateCalories, calculateDuration } = require('../utils/calculations');
 
 // @desc    Log a new workout

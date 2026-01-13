@@ -24,11 +24,38 @@ const generateWorkout = async (req, res) => {
         let selectedExercises = [];
         const exerciseCount = duration === '30' ? 4 : duration === '45' ? 6 : 8;
 
-        // Shuffle Array (Fisher-Yates)
-        const shuffled = allExercises.sort(() => 0.5 - Math.random());
+        // Filter based on equipment if specified
+        let candidateExercises = allExercises;
+        if (equipment && equipment !== 'gym') { // If gym, assume all access
+            candidateExercises = allExercises.filter(ex =>
+                ex.equipment.toLowerCase().includes(equipment.toLowerCase()) ||
+                ex.equipment === 'None'
+            );
+        }
 
-        // Pick Exercises (Simple logic for MVP)
-        selectedExercises = shuffled.slice(0, exerciseCount);
+        // Prioritize compound movements for strength
+        if (goal === 'strength') {
+            const compounds = candidateExercises.filter(ex =>
+                ['Chest', 'Back', 'Legs'].includes(ex.muscleGroup) &&
+                ['Hard', 'Medium'].includes(ex.difficulty)
+            );
+            // Ensure good base of compounds
+            selectedExercises.push(...compounds.sort(() => 0.5 - Math.random()).slice(0, Math.ceil(exerciseCount / 2)));
+        }
+
+        // Fill the rest with random selection from remaining candidates to ensure variety
+        const remainingNeeded = exerciseCount - selectedExercises.length;
+        if (remainingNeeded > 0) {
+            const remainingCandidates = candidateExercises.filter(ex => !selectedExercises.includes(ex));
+            selectedExercises.push(...remainingCandidates.sort(() => 0.5 - Math.random()).slice(0, remainingNeeded));
+        }
+
+        // Fallback if not enough exercises
+        if (selectedExercises.length < exerciseCount) {
+            const extraNeeded = exerciseCount - selectedExercises.length;
+            const others = allExercises.filter(ex => !selectedExercises.includes(ex));
+            selectedExercises.push(...others.slice(0, extraNeeded));
+        }
 
         // 3. Customize Sets/Reps based on Goal
         const plan = selectedExercises.map(ex => {

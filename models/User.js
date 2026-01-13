@@ -22,10 +22,39 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    isSuspended: {
+        type: Boolean,
+        default: false
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    subscriptionTier: {
+        type: String,
+        enum: ['free', 'pro', 'premium'],
+        default: 'free'
+    },
+    subscriptionExpiry: {
+        type: Date,
+        default: null
+    },
+    stripeCustomerId: {
+        type: String, // For payment processing
+        default: null
+    },
+    tenantId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        default: null // Null means "fitnesspro" (default platform)
     }
 }, {
     timestamps: true
 });
+
+// Compound index for unique email PER TENANT (optional, but good for SaaS)
+// userSchema.index({ email: 1, tenantId: 1 }, { unique: true });
 
 userSchema.pre('save', async function () {
     if (!this.isModified('password')) {

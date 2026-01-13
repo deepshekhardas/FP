@@ -1,15 +1,15 @@
 # FitnessPro - Smart Fitness Tracking Application 🏋️‍♂️
 
-FitnessPro is a full-stack fitness tracking application designed to help users monitor workouts, track nutrition, and achieve fitness goals with the power of AI. It features a modern, responsive UI and a robust backend for secure data management.
+![Dashboard Preview](file:///C:/Users/hp/.gemini/antigravity/brain/5c955e50-8ba7-4074-a317-205d7724c301/dashboard_mockup_1768275612261.png)
+
+FitnessPro is a **premium, full-stack fitness tracking application** built for the modern athlete. It combines AI-driven workout planning with comprehensive analytics.
 
 ## 🚀 Key Features
+*   **🤖 AI-Powered Workout Planner:** Generates personalized routines using smart filtering algorithms.
+*   **📊 Interactive Analytics:** Visual charts for Weekly Progress, Calories, and Consistency.
+*   **🔔 Real-Time Notifications:** Goal tracking and deadline reminders.
+*   **📱 Responsive & Premium UI:** "Deep Luxury" dark mode aesthetic with glassmorphism effects.
 
-*   **AI-Powered Workout Planner:** leveraging AI to generate personalized workout plans based on user goals and fitness levels.
-*   **Comprehensive Dashboard:** Visual analytics for workout frequency, calories burned, and weight progress.
-*   **Exercise Library:** A vast database of exercises with instructions and categorization.
-*   **User Profiles:** Detailed profile management including BMI calculation and macro tracking.
-*   **Secure Authentication:** User signup and login protected with industry-standard encryption.
-*   **Responsive Design:** Fully optimized for seamless usage on desktop, tablet, and mobile devices.
 
 ## 🛠️ Tech Stack
 

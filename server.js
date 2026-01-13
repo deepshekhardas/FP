@@ -24,6 +24,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static('public'));
 
+// Tenant Middleware (Multi-tenancy)
+const tenantMiddleware = require('./middleware/tenantMiddleware');
+app.use(tenantMiddleware);
+
+// Swagger API Docs
+const setupSwagger = require('./swagger');
+setupSwagger(app);
+
 // Routes
 const statsRoutes = require('./routes/statsRoutes');
 const goalRoutes = require('./routes/goalRoutes');
@@ -37,6 +45,9 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/ai', require('./routes/aiRoutes')); // AI Routes
+app.use('/api/admin', require('./routes/adminRoutes')); // Admin Routes
+app.use('/api/tenants', require('./routes/tenantRoutes')); // Multi-tenant routes
+app.use('/api/payment', require('./routes/paymentRoutes')); // Payment Routes
 app.use('/api', planRoutes); // planRoutes has mixed paths, so mounting at /api
 
 const PORT = process.env.PORT || 3001;

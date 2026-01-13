@@ -1,0 +1,92 @@
+<div class="container fade-in">
+    <div class="dashboard-header" style="text-align: center; margin-bottom: 50px;">
+        <h1 class="text-gradient" style="font-size: 3rem; margin-bottom: 0.5rem;">Choose Your Plan</h1>
+        <p class="text-secondary" style="font-size: 1.1rem;">Unlock premium features to accelerate your fitness journey
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto;">
+        <!-- Free Plan -->
+        <div class="card" style="text-align: center; position: relative;">
+            <h3 style="margin-bottom: 10px;">Free</h3>
+            <div style="font-size: 3rem; font-weight: bold; margin: 20px 0;">$0</div>
+            <p class="text-secondary" style="margin-bottom: 30px;">Forever free</p>
+
+            <ul style="list-style: none; text-align: left; margin-bottom: 30px;">
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Basic workout tracking</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Exercise library access</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Basic analytics</li>
+                <li style="padding: 8px 0; color: var(--text-muted);"><i class="fas fa-times"
+                        style="margin-right: 10px;"></i> AI Workout Planner</li>
+                <li style="padding: 8px 0; color: var(--text-muted);"><i class="fas fa-times"
+                        style="margin-right: 10px;"></i> Premium support</li>
+            </ul>
+
+            <button class="btn btn-secondary btn-block" disabled>Current Plan</button>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="card"
+            style="text-align: center; position: relative; border: 2px solid var(--primary-color); transform: scale(1.05);">
+            <div
+                style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--gradient-primary); padding: 5px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+                POPULAR
+            </div>
+            <h3 style="margin-bottom: 10px; margin-top: 10px;">Pro</h3>
+            <div style="font-size: 3rem; font-weight: bold; margin: 20px 0;">$9<span
+                    style="font-size: 1rem; color: var(--text-secondary);">/month</span></div>
+            <p class="text-secondary" style="margin-bottom: 30px;">Best for enthusiasts</p>
+
+            <ul style="list-style: none; text-align: left; margin-bottom: 30px;">
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Everything in Free</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> AI Workout Planner</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Advanced analytics</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Goal tracking</li>
+                <li style="padding: 8px 0; color: var(--text-muted);"><i class="fas fa-times"
+                        style="margin-right: 10px;"></i> 1-on-1 coaching</li>
+            </ul>
+
+            <button class="btn btn-primary btn-block" onclick="subscribe('pro')">
+                <i class="fas fa-rocket"></i> Upgrade to Pro
+            </button>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="card"
+            style="text-align: center; position: relative; background: linear-gradient(145deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));">
+            <h3 style="margin-bottom: 10px;">Premium</h3>
+            <div style="font-size: 3rem; font-weight: bold; margin: 20px 0;">$19<span
+                    style="font-size: 1rem; color: var(--text-secondary);">/month</span></div>
+            <p class="text-secondary" style="margin-bottom: 30px;">For serious athletes</p>
+
+            <ul style="list-style: none; text-align: left; margin-bottom: 30px;">
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Everything in Pro</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Personalized meal plans</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Priority support</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> 1-on-1 coaching calls</li>
+                <li style="padding: 8px 0;"><i class="fas fa-check"
+                        style="color: var(--success-color); margin-right: 10px;"></i> Custom workout programs</li>
+            </ul>
+
+            <button class="btn btn-primary btn-block"
+                style="background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);" onclick="subscribe('premium')">
+                <i class="fas fa-crown"></i> Go Premium
+            </button>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; color: var(--text-muted);">
+        <p><i class="fas fa-lock" style="margin-right: 5px;"></i> Secure payment via Stripe. Cancel anytime.</p>
+    </div>
+</div>
