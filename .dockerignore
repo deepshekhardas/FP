@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+tests
+coverage
+*.test.js
+jest.config.js
+
+# Development files
+.env
+.env.example
+*.md
+!README.md
+
+# Data directories
+data
+*.log
+
+# Mobile app (separate deployment)
+mobile
+
+# Temporary files
+*.tmp
+*.temp
+lint_*.txt
+test_*.txt

@@ -1,14 +1,15 @@
-name: Node.js CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [master, main]
   pull_request:
-    branches: [ "main" ]
+    branches: [master, main]
 
 jobs:
-  build:
-
+  # Lint and Test Job
+  test:
+    name: Lint & Test
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,24 +17,61 @@ jobs:
         node-version: [18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run Lint
-      run: npm run lint
-      continue-on-error: true # Warning for now, fail later when strictly compliant
-      
-    - name: Run Tests
-      run: npm test
-      env:
-        CI: true
-        JWT_SECRET: test_secret
-        MONGO_URI: mongodb://localhost:27017/test_db # GitHub Actions service needed for real DB, mocking for now
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test
+        env:
+          CI: true
+          JWT_SECRET: test_secret
+          STRIPE_SECRET_KEY: sk_test_mock
+          MONGO_URI: mongodb://localhost:27017/test_db
+
+  # Build Docker Image Job
+  build-docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: fitnesspro:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy notification (configure as needed)
+  deploy:
+    name: Deploy Ready
+    runs-on: ubuntu-latest
+    needs: build-docker
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deployment notification
+        run: |
+          echo "✅ All tests passed!"
+          echo "✅ Docker image built successfully!"
+          echo "🚀 Ready for deployment to Render/Railway/AWS"

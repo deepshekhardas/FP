@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const { connectDB } = require('./db');
+const { initRedis } = require('./utils/redisClient');
 const profileRoutes = require('./routes/profileRoutes');
 
 const exerciseRoutes = require('./routes/exerciseRoutes');
@@ -11,6 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 dotenv.config();
 
 connectDB();
+initRedis(); // Initialize Redis (graceful fallback if unavailable)
 
 const app = express();
 

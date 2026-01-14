@@ -1,4 +1,5 @@
 const { Exercise } = require('../db');
+const { getCache, setCache, clearCachePattern } = require('../utils/redisClient');
 
 // @desc    Get all exercises
 // @route   GET /api/exercises
@@ -7,22 +8,37 @@ const getExercises = async (req, res) => {
     try {
         const pageSize = 10;
         const page = Number(req.query.pageNumber) || 1;
+        const keyword = req.query.keyword || '';
 
-        const keyword = req.query.keyword
+        // Generate cache key based on query params
+        const cacheKey = `exercises:list:${page}:${keyword}`;
+
+        // Try to get from cache first
+        const cached = await getCache(cacheKey);
+        if (cached) {
+            return res.json(cached);
+        }
+
+        const keywordFilter = keyword
             ? {
                 name: {
-                    $regex: req.query.keyword,
+                    $regex: keyword,
                     $options: 'i'
                 }
             }
             : {};
 
-        const count = await Exercise.countDocuments({ ...keyword });
-        const exercises = await Exercise.find({ ...keyword })
+        const count = await Exercise.countDocuments({ ...keywordFilter });
+        const exercises = await Exercise.find({ ...keywordFilter })
             .limit(pageSize)
             .skip(pageSize * (page - 1));
 
-        res.json({ exercises, page, pages: Math.ceil(count / pageSize) });
+        const result = { exercises, page, pages: Math.ceil(count / pageSize) };
+
+        // Cache for 5 minutes
+        await setCache(cacheKey, result, 300);
+
+        res.json(result);
     } catch (error) {
         res.status(500).json({ message: 'Server Error' });
     }
