@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const { connectDB } = require('./db');
 const { initRedis } = require('./utils/redisClient');
+const { initOpenAI } = require('./utils/openaiService');
 const profileRoutes = require('./routes/profileRoutes');
 
 const exerciseRoutes = require('./routes/exerciseRoutes');
@@ -13,6 +14,7 @@ dotenv.config();
 
 connectDB();
 initRedis(); // Initialize Redis (graceful fallback if unavailable)
+initOpenAI(); // Initialize OpenAI (graceful fallback if not configured)
 
 const app = express();
 

@@ -59,8 +59,8 @@ const renderProfileTab = (container, user, bmiData) => {
                 <h2 class="profile-name">${user.name}</h2>
                 <p class="profile-email">${user.email}</p>
                 <div class="profile-badges">
-                    <span class="badge-pill">Member since ${new Date(user.createdAt).getFullYear()}</span>
-                    <span class="badge-pill" style="background: var(--warning-color); color: #000;">Premium</span>
+                    <span class="badge-pill">Member since ${user.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear()}</span>
+                    <span class="badge-pill" style="background: var(--warning-color); color: #000;">${user.tier || 'Free'}</span>
                 </div>
             </div>
 

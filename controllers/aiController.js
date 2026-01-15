@@ -1,4 +1,5 @@
 const Exercise = require('../models/Exercise');
+const { generateWorkoutWithAI, isOpenAIReady } = require('../utils/openaiService');
 
 // @desc    Generate AI Workout Plan
 // @route   POST /api/ai/generate
@@ -7,26 +8,40 @@ const generateWorkout = async (req, res) => {
     try {
         const { goal, equipment, duration, experience } = req.body;
 
-        // 1. Fetch Candidate Exercises
-        // Simulating AI selection by filtering database
-        let query = {};
+        // Fetch all exercises for AI context
+        const allExercises = await Exercise.find();
 
-        // Equipment Filter
-        if (equipment === 'bodyweight') {
-            query.equipment = 'Bodyweight'; // Assuming exact match in DB
+        // Try OpenAI first if configured
+        if (isOpenAIReady()) {
+            console.log('🤖 Using OpenAI for workout generation...');
+
+            const aiPlan = await generateWorkoutWithAI({
+                goal,
+                equipment,
+                duration,
+                experience,
+                availableExercises: allExercises
+            });
+
+            if (aiPlan) {
+                return res.json({
+                    success: true,
+                    plan: aiPlan
+                });
+            }
+
+            console.log('⚠️ OpenAI failed, falling back to algorithm...');
         }
-        // Note: For 'gym', we include everything. For 'dumbbells', we'd need complex queries, 
-        // but for MVP we'll simplify: just fetch random mix and let 'AI' logic handle selection.
 
-        const allExercises = await Exercise.find(); // Fetch all for in-memory filtering (faster for small datasets)
+        // Fallback: Original algorithm-based generation
+        console.log('📊 Using algorithm-based workout generation...');
 
-        // 2. "Smart" Selection Logic
         let selectedExercises = [];
         const exerciseCount = duration === '30' ? 4 : duration === '45' ? 6 : 8;
 
         // Filter based on equipment if specified
         let candidateExercises = allExercises;
-        if (equipment && equipment !== 'gym') { // If gym, assume all access
+        if (equipment && equipment !== 'gym') {
             candidateExercises = allExercises.filter(ex =>
                 ex.equipment.toLowerCase().includes(equipment.toLowerCase()) ||
                 ex.equipment === 'None'
@@ -39,11 +54,10 @@ const generateWorkout = async (req, res) => {
                 ['Chest', 'Back', 'Legs'].includes(ex.muscleGroup) &&
                 ['Hard', 'Medium'].includes(ex.difficulty)
             );
-            // Ensure good base of compounds
             selectedExercises.push(...compounds.sort(() => 0.5 - Math.random()).slice(0, Math.ceil(exerciseCount / 2)));
         }
 
-        // Fill the rest with random selection from remaining candidates to ensure variety
+        // Fill the rest with random selection
         const remainingNeeded = exerciseCount - selectedExercises.length;
         if (remainingNeeded > 0) {
             const remainingCandidates = candidateExercises.filter(ex => !selectedExercises.includes(ex));
@@ -57,7 +71,7 @@ const generateWorkout = async (req, res) => {
             selectedExercises.push(...others.slice(0, extraNeeded));
         }
 
-        // 3. Customize Sets/Reps based on Goal
+        // Customize Sets/Reps based on Goal
         const plan = selectedExercises.map(ex => {
             let sets, reps;
 
@@ -67,7 +81,7 @@ const generateWorkout = async (req, res) => {
             } else if (goal === 'muscle') {
                 sets = 3;
                 reps = 10;
-            } else { // weight_loss or endurance
+            } else {
                 sets = 4;
                 reps = 15;
             }
@@ -80,15 +94,14 @@ const generateWorkout = async (req, res) => {
             };
         });
 
-        // 4. Mimic "AI" Processing Time (Optional, handled by frontend delay)
-
         res.json({
             success: true,
             plan: {
                 title: `AI Generated ${goal.toUpperCase()} Plan`,
                 duration: `${duration} Minutes`,
                 level: experience,
-                exercises: plan
+                exercises: plan,
+                generatedBy: 'Algorithm'
             }
         });
 
@@ -98,4 +111,52 @@ const generateWorkout = async (req, res) => {
     }
 };
 
-module.exports = { generateWorkout };
+// @desc    Get AI Fitness Advice
+// @route   POST /api/ai/advice
+// @access  Private
+const getAdvice = async (req, res) => {
+    const { getFitnessAdvice, isOpenAIReady } = require('../utils/openaiService');
+
+    try {
+        const { question } = req.body;
+
+        if (!question) {
+            return res.status(400).json({ message: 'Question is required' });
+        }
+
+        if (!isOpenAIReady()) {
+            return res.status(503).json({
+                message: 'AI advisor not available. OPENAI_API_KEY not configured.',
+                available: false
+            });
+        }
+
+        const advice = await getFitnessAdvice(question);
+
+        res.json({
+            success: true,
+            question,
+            advice,
+            generatedBy: 'OpenAI GPT-3.5'
+        });
+
+    } catch (error) {
+        console.error('AI Advice Error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Check AI Status
+// @route   GET /api/ai/status
+// @access  Public
+const getAIStatus = (req, res) => {
+    res.json({
+        openai: isOpenAIReady(),
+        algorithm: true,
+        message: isOpenAIReady()
+            ? 'OpenAI is configured and ready'
+            : 'Using algorithm-based generation (OpenAI not configured)'
+    });
+};
+
+module.exports = { generateWorkout, getAdvice, getAIStatus };
