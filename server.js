@@ -54,6 +54,16 @@ app.use('/api/tenants', require('./routes/tenantRoutes')); // Multi-tenant route
 app.use('/api/payment', require('./routes/paymentRoutes')); // Payment Routes
 app.use('/api', planRoutes); // planRoutes has mixed paths, so mounting at /api
 
+// Health Check Endpoint for CI/CD
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, '0.0.0.0', () => {

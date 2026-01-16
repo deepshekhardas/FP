@@ -1,0 +1,81 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run Tests
+        run: npm test
+        env:
+          CI: true
+          JWT_SECRET: test_secret
+          MONGO_URI: mongodb://localhost:27017/test_db
+
+      - name: 🚀 Deploy to Render
+        run: |
+          echo "🚀 Triggering production deployment..."
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            echo "✅ Deployment triggered successfully!"
+          else
+            echo "❌ RENDER_DEPLOY_HOOK_URL not configured"
+            exit 1
+          fi
+
+      - name: ⏳ Wait for deployment
+        run: |
+          echo "⏳ Waiting 60 seconds for deployment to complete..."
+          sleep 60
+
+      - name: ✅ Verify deployment
+        run: |
+          if [ -n "${{ secrets.PRODUCTION_URL }}" ]; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.PRODUCTION_URL }}/api/health" || echo "000")
+            if [ "$response" = "200" ]; then
+              echo "✅ Health check passed! App is live."
+            else
+              echo "⚠️ Health check returned: $response"
+            fi
+          else
+            echo "📝 Set PRODUCTION_URL secret to enable health checks"
+          fi
+
+      - name: 📝 Deployment Report
+        run: |
+          echo "═══════════════════════════════════════════════════"
+          echo "📊 DEPLOYMENT REPORT"
+          echo "═══════════════════════════════════════════════════"
+          echo "📅 Date: $(date)"
+          echo "🔖 Version: ${{ github.ref_name }}"
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "═══════════════════════════════════════════════════"
