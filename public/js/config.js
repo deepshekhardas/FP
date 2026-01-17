@@ -1,4 +1,8 @@
-export const API_URL = 'http://localhost:3005/api';
+// Auto-detect API URL based on environment
+const isProduction = window.location.hostname !== 'localhost';
+export const API_URL = isProduction
+    ? `${window.location.origin}/api`
+    : 'http://localhost:3005/api';
 export const APP_NAME = 'FitnessPro';
 export const ROUTES = {
     LOGIN: '#/login',
