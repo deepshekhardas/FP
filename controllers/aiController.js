@@ -1,5 +1,5 @@
 const Exercise = require('../models/Exercise');
-const { generateWorkoutWithAI, isOpenAIReady } = require('../utils/openaiService');
+const { generateWorkoutWithAI, isGeminiReady } = require('../utils/geminiService');
 
 // @desc    Generate AI Workout Plan
 // @route   POST /api/ai/generate
@@ -11,9 +11,9 @@ const generateWorkout = async (req, res) => {
         // Fetch all exercises for AI context
         const allExercises = await Exercise.find();
 
-        // Try OpenAI first if configured
-        if (isOpenAIReady()) {
-            console.log('🤖 Using OpenAI for workout generation...');
+        // Try Gemini first if configured
+        if (isGeminiReady()) {
+            console.log('🤖 Using Gemini for workout generation...');
 
             const aiPlan = await generateWorkoutWithAI({
                 goal,
@@ -30,7 +30,7 @@ const generateWorkout = async (req, res) => {
                 });
             }
 
-            console.log('⚠️ OpenAI failed, falling back to algorithm...');
+            console.log('⚠️ Gemini failed, falling back to algorithm...');
         }
 
         // Fallback: Original algorithm-based generation
@@ -115,7 +115,7 @@ const generateWorkout = async (req, res) => {
 // @route   POST /api/ai/advice
 // @access  Private
 const getAdvice = async (req, res) => {
-    const { getFitnessAdvice, isOpenAIReady } = require('../utils/openaiService');
+    const { getFitnessAdvice, isGeminiReady } = require('../utils/geminiService');
 
     try {
         const { question } = req.body;
@@ -124,9 +124,9 @@ const getAdvice = async (req, res) => {
             return res.status(400).json({ message: 'Question is required' });
         }
 
-        if (!isOpenAIReady()) {
+        if (!isGeminiReady()) {
             return res.status(503).json({
-                message: 'AI advisor not available. OPENAI_API_KEY not configured.',
+                message: 'AI advisor not available. GEMINI_API_KEY not configured.',
                 available: false
             });
         }
@@ -137,7 +137,7 @@ const getAdvice = async (req, res) => {
             success: true,
             question,
             advice,
-            generatedBy: 'OpenAI GPT-3.5'
+            generatedBy: 'Google Gemini'
         });
 
     } catch (error) {
@@ -150,12 +150,13 @@ const getAdvice = async (req, res) => {
 // @route   GET /api/ai/status
 // @access  Public
 const getAIStatus = (req, res) => {
+    const { isGeminiReady } = require('../utils/geminiService');
     res.json({
-        openai: isOpenAIReady(),
+        gemini: isGeminiReady(),
         algorithm: true,
-        message: isOpenAIReady()
-            ? 'OpenAI is configured and ready'
-            : 'Using algorithm-based generation (OpenAI not configured)'
+        message: isGeminiReady()
+            ? 'Google Gemini is configured and ready'
+            : 'Using algorithm-based generation (Gemini not configured)'
     });
 };
 
