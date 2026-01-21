@@ -14,8 +14,11 @@ const initRedis = async () => {
         redisClient = createClient({ url: redisUrl });
 
         redisClient.on('error', (err) => {
-            console.warn('⚠️ Redis connection error:', err.message);
-            isConnected = false;
+            // Only log if we were previously connected to avoid spam during startup/failures
+            if (isConnected) {
+                console.warn('⚠️ Redis connection error:', err.message);
+                isConnected = false;
+            }
         });
 
         redisClient.on('connect', () => {

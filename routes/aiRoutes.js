@@ -63,4 +63,3 @@ router.post('/advice', protect, getAdvice);
 router.get('/status', getAIStatus);
 
 module.exports = router;
-

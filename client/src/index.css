@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg;
+  }
+
+  .glass-card {
+    @apply bg-slate-900/50 backdrop-blur-md border border-slate-800/50 shadow-xl;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-500/25 transition-all active:scale-95;
+  }
+
+  .input-dark {
+    @apply bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors;
+  }
+}
