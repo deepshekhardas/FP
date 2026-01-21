@@ -16,11 +16,16 @@ describe('Database Models Integration', () => {
 
     afterEach(async () => {
         // Optional: clear collections between tests
+        await User.deleteMany({});
+        await UserProfile.deleteMany({});
+        await Exercise.deleteMany({});
+        await WorkoutLog.deleteMany({});
     });
 
     it('should perform full user flow', async () => {
         // 1. Create User
-        const user = await User.create({ name: 'Integration Test', email: 'int@test.com', password: 'hash' });
+        const uniqueEmail = `int_${Date.now()}@test.com`;
+        const user = await User.create({ name: 'Integration Test', email: uniqueEmail, password: 'hash' });
         expect(user._id).toBeDefined();
 
         // 2. Create Profile
