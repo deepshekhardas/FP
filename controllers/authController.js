@@ -33,8 +33,13 @@ const registerUser = async (req, res) => {
 
         if (user) {
             // Generate verification token and send email
-            const verificationToken = await Token.generateToken(user._id, 'email_verification', 24);
-            await sendVerificationEmail(user, verificationToken);
+            try {
+                const verificationToken = await Token.generateToken(user._id, 'email_verification', 24);
+                await sendVerificationEmail(user, verificationToken);
+            } catch (emailError) {
+                console.error("Failed to send verification email:", emailError.message);
+                // Proceed without failing registration
+            }
 
             res.status(201).json({
                 _id: user._id,
@@ -44,7 +49,7 @@ const registerUser = async (req, res) => {
                 isEmailVerified: user.isEmailVerified,
                 tenantId: user.tenantId,
                 token: generateToken(user._id),
-                message: 'Registration successful! Please check your email to verify your account.'
+                message: 'Registration successful! (Email verification might be pending)'
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
