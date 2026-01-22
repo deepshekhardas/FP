@@ -21,6 +21,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepshekhardas/fp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deepshekhardas/fp/issues"
+  },
+  "homepage": "https://github.com/deepshekhardas/fp#readme",
   "type": "commonjs",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
